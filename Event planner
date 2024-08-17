@@ -1,0 +1,152 @@
+-- creating an event planner system using database 
+-- The objective of creating an event planner using a database is to efficiently manage and organize events by tracking
+-- details such as schedules, venues, guests, and tasks, ensuring smooth event execution and streamlined coordination.
+-- This system aims to automate and simplify the process of event planning, reducing manual errors and enhancing productivity.
+
+Table: Events
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| EventID        | int     |
+| EventName      | varchar |
+| EventDate      | date    |
+| VenueID        | int     |
+| Budget         | decimal |
+| Description    | text    |
++----------------+---------+
+This table Stores information about each event.
+EventID is the primary key with auto_increment.
+VenueID is the foreign key from the Venues table.
+
+Table: Guests
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| GuestID        | int     |
+| EventID        | int     |
+| FirstName      | varchar |
+| LastName       | varchar |
+| Email          | varchar |
+| PhoneNumber    | varchar |
+| RSVPStatus     | varchar |
++----------------+---------+
+This table Stores details of guests invited to events.
+GuestID is the primary key with auto_increment.
+EventID is the foreign key from the Events table.
+EventID is the ID of events and GuestID is the ID of Guests and they both shows which guests who attends those events.
+
+Table: Venues
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| VenueID        | int     |
+| VenueName      | varchar |
+| Address        | varchar |
+| Capacity       | int     |
+| ContactInfo    | varchar |
++----------------+---------+
+This table Stores information about venues where events are held.
+VenueID is the primary key with auto_increment.
+
+Table: Schedules
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| TaskID         | int     |
+| EventID        | int     |
+| TaskName       | varchar |
+| TaskDate       | date    |
+| TaskTime       | time    |
+| Status         | varchar |
++----------------+---------+
+This table Stores tasks or schedules related to each event.
+TaskID is the primary key with auto_increment.
+EventID is the foreign key from the Events table.
+
+-- creating Events table
+CREATE TABLE Events (
+    EventID INT AUTO_INCREMENT PRIMARY KEY,
+    EventName VARCHAR(100),
+    EventDate DATE,
+    VenueID INT,
+    Budget DECIMAL(10, 2),
+    Description TEXT,
+    FOREIGN KEY (VenueID) REFERENCES Venues(VenueID)
+);
+-- creating Guests table
+CREATE TABLE Guests (
+    GuestID INT AUTO_INCREMENT PRIMARY KEY,
+    EventID INT,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Email VARCHAR(100),
+    PhoneNumber VARCHAR(15),
+    RSVPStatus VARCHAR(20),
+    FOREIGN KEY (EventID) REFERENCES Events(EventID)
+);
+-- creating Venues table
+CREATE TABLE Venues (
+    VenueID INT AUTO_INCREMENT PRIMARY KEY,
+    VenueName VARCHAR(100),
+    Address VARCHAR(255),
+    Capacity INT,
+    ContactInfo VARCHAR(100)
+);
+-- creating Schedules table
+CREATE TABLE Schedules (
+    TaskID INT AUTO_INCREMENT PRIMARY KEY,
+    EventID INT,
+    TaskName VARCHAR(100),
+    TaskDate DATE,
+    TaskTime TIME,
+    Status VARCHAR(50),
+    FOREIGN KEY (EventID) REFERENCES Events(EventID)
+);
+
+-- Inserting some sample data into the tables.
+
+INSERT INTO Venues (VenueName, Address, Capacity, ContactInfo)
+VALUES ('The Grand Ballroom', 'vebino 128/B', 800, 'someone@email.com'), ('The party Hall', 'City X 42', 300, 'XYZ@email.com'), ('Big clock room', 'american city 81 A', 400, 'prayag@email.com');
+
+INSERT INTO Events (EventName, EventDate, VenueID, Budget, Description)
+VALUES ('Company Annual Party', '2024-12-15', 1, 200000.00, 'A year-end celebration for the company.'), ('Birthday party', '2024-03-18', 2, 400000.00, 'Birthday party of our boss'), ('Pool party', '2024-08-25', 3, 300000.00, 'Chill day on weekend');
+
+INSERT INTO Guests (EventID, FirstName, LastName, Email, PhoneNumber, RSVPStatus)
+VALUES (1, 'John', 'Doe', 'johndoe@example.com', '9876543210', 'Pending'), (2, 'Stiphon', 'George', 'stge@example.com', '8765890988', 'Reject'), (3, 'Marc', 'Polo', 'Marcpolo@example.com', '9877789643', 'Confirmed');
+
+INSERT INTO Schedules (EventID, TaskName, TaskDate, TaskTime, Status)
+VALUES (1, 'Book Catering', '2024-12-01', '10:00:00', 'Pending'), (2, 'Sending invitations', '2024-03-15', '08:00:00', 'Done'), (3, 'Organizing themes', '2024-08-10', '12:00:00', 'Done');
+ 
+-- write SQL queries to perform various operations like managing events, tracking guests, and scheduling tasks. 
+
+-- Query to Retrieve Event Details
+SELECT e.EventName, e.EventDate, v.VenueName, e.Budget, e.Description
+FROM Events e
+JOIN Venues v ON e.VenueID = v.VenueID
+WHERE e.EventID = 2;
+
+-- Query to List All Guests for an Event with a condition
+SELECT g.FirstName, g.LastName, g.Email, g.RSVPStatus
+FROM Guests g
+WHERE g.EventID = 1;
+
+-- Query to Update RSVP Status
+UPDATE Guests
+SET RSVPStatus = 'Confirmed'
+WHERE GuestID = 2;
+
+-- Query to Track Event Schedule
+SELECT TaskName, TaskDate, TaskTime, Status
+FROM Schedules
+WHERE EventID = 1
+ORDER BY TaskDate, TaskTime;
+
+
+
+
+
+
